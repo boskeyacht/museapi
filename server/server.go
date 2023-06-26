@@ -11,19 +11,22 @@ import (
 	"github.com/boskeyacht/museapi/server/handlers/quiz"
 	"github.com/boskeyacht/museapi/server/handlers/user"
 	"github.com/gin-gonic/gin"
+	"github.com/sashabaranov/go-openai"
 	"github.com/uptrace/bun"
 )
 
 type Server struct {
 	DB     *bun.DB
+	OpenAI *openai.Client
 	Config *types.Config
 	sync.Mutex
 }
 
-func NewServer(db *bun.DB, cfg *types.Config) *Server {
+func NewServer(cfg *types.Config, db *bun.DB, openai *openai.Client) *Server {
 	return &Server{
 		DB:     db,
 		Config: cfg,
+		OpenAI: openai,
 	}
 }
 

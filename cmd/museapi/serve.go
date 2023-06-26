@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/boskeyacht/museapi/server"
+	"github.com/sashabaranov/go-openai"
 	"github.com/spf13/cobra"
 
 	"github.com/uptrace/bun"
@@ -31,7 +32,7 @@ var (
 				bundebug.FromEnv("BUNDEBUG"),
 			))
 
-			server := server.NewServer(db, cfg)
+			server := server.NewServer(cfg, db, openai.NewClient(cfg.OpenAIKey))
 
 			err := server.InitTables(context.Background())
 			if err != nil {
