@@ -15,21 +15,24 @@ type Question struct {
 	Type            types.Question `bun:"type,notnull" json:"type"`
 	QuizID          int64          `bun:"quiz_id" json:"quiz_id"`
 	Question        string         `bun:"question,notnull" json:"question"`
-	Answer          bool           `bun:"answer,notnull" json:"answer"`
+	CorrectAnswer   string         `bun:"answer,notnull" json:"answer"`
+	UserAnswer      string         `bun:"user_answer,notnull" json:"user_answer"`
 	PossibleAnswers []string       `bun:"possible_answers,notnull" json:"possible_answers"`
 	IsCorrect       bool           `bun:"is_correct,notnull" json:"is_correct"`
 }
 
 func DefaultQuestion() *Question {
 	return &Question{
-		ID:        0,
-		CreatedAt: time.Time{},
-		UpdatedAt: time.Time{},
-		Type:      "",
-		QuizID:    0,
-		Question:  "",
-		Answer:    false,
-		IsCorrect: false,
+		ID:              0,
+		CreatedAt:       time.Time{},
+		UpdatedAt:       time.Time{},
+		Type:            "",
+		QuizID:          0,
+		Question:        "",
+		CorrectAnswer:   "",
+		UserAnswer:      "",
+		PossibleAnswers: []string{},
+		IsCorrect:       false,
 	}
 }
 
@@ -38,7 +41,8 @@ func (q *Question) NewQuestion(ctx context.Context, db *bun.DB) error {
 		Type:            q.Type,
 		QuizID:          q.QuizID,
 		Question:        q.Question,
-		Answer:          q.Answer,
+		CorrectAnswer:   q.CorrectAnswer,
+		UserAnswer:      q.UserAnswer,
 		PossibleAnswers: q.PossibleAnswers,
 		IsCorrect:       q.IsCorrect,
 	}).Exec(ctx)
@@ -72,7 +76,8 @@ func (q *Question) UpdateQuestion(ctx context.Context, db *bun.DB) error {
 		Type:            q.Type,
 		QuizID:          q.QuizID,
 		Question:        q.Question,
-		Answer:          q.Answer,
+		CorrectAnswer:   q.CorrectAnswer,
+		UserAnswer:      q.UserAnswer,
 		PossibleAnswers: q.PossibleAnswers,
 		IsCorrect:       q.IsCorrect,
 	}).Where("id = ?", q.ID).Exec(ctx)

@@ -4,18 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/boskeyacht/museapi/internal/types"
 	"github.com/uptrace/bun"
 )
 
 type Quiz struct {
-	ID        int64             `bun:"id,pk" json:"id"`
-	AuthorID  int64             `bun:"author_id" json:"author_id"`
-	CreatedAt time.Time         `bun:",nullzero,notnull,default:current_timestamp" json:"created_at"`
-	UpdatedAt time.Time         `bun:",nullzero,notnull,default:current_timestamp" json:"updated_at"`
-	Title     string            `bun:"title,notnull" json:"title"`
-	Questions []*types.Question `bun:"rel:has-many" json:"questions"`
-	Score     int               `bun:"score,notnull" json:"score"`
+	ID        int64       `bun:"id,pk" json:"id"`
+	AuthorID  int64       `bun:"author_id" json:"author_id"`
+	CreatedAt time.Time   `bun:",nullzero,notnull,default:current_timestamp" json:"created_at"`
+	UpdatedAt time.Time   `bun:",nullzero,notnull,default:current_timestamp" json:"updated_at"`
+	Title     string      `bun:"title,notnull" json:"title"`
+	Questions []*Question `bun:"rel:has-many" json:"questions"`
+	Score     int         `bun:"score,notnull" json:"score"`
 }
 
 func DefaultQuiz() *Quiz {
@@ -25,7 +24,7 @@ func DefaultQuiz() *Quiz {
 		CreatedAt: time.Time{},
 		UpdatedAt: time.Time{},
 		Title:     "",
-		Questions: []*types.Question{},
+		Questions: []*Question{},
 		Score:     0,
 	}
 }

@@ -52,15 +52,15 @@ func (s *Server) InitRoutes(ctx context.Context) *gin.Engine {
 	quizRoute := server.Group("/quiz")
 	{
 		quizRoute.GET("/:id", quiz.GetQuizHandler(ctx, s.DB))
-		quizRoute.POST("", quiz.NewQuizHandler(ctx, s.DB))
-		quizRoute.POST("/:id/score", quiz.ScoreQuizHandler(ctx, s.DB))
+		quizRoute.POST("", quiz.NewQuizHandler(ctx, s.DB, s.OpenAI))
+		quizRoute.POST("/:id/score", quiz.ScoreQuizHandler(ctx, s.DB, s.OpenAI))
 		quizRoute.PATCH("/", quiz.UpdateQuizHandler(ctx, s.DB))
 	}
 
 	chatRoute := server.Group("/chat")
 	{
 		chatRoute.GET("/:id", quiz.GetQuizHandler(ctx, s.DB))
-		chatRoute.POST("", quiz.NewQuizHandler(ctx, s.DB))
+		chatRoute.POST("", quiz.NewQuizHandler(ctx, s.DB, s.OpenAI))
 		chatRoute.PATCH("/:id", quiz.UpdateQuizHandler(ctx, s.DB))
 	}
 

@@ -9,7 +9,7 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
-func SendAndUnmarshal(ctx context.Context, client openai.Client, prompt string, respTarget interface{}) (interface{}, error) {
+func SendAndUnmarshal(ctx context.Context, client *openai.Client, prompt string, respTarget interface{}) error {
 	resp, err := client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
@@ -26,7 +26,7 @@ func SendAndUnmarshal(ctx context.Context, client openai.Client, prompt string, 
 	if err != nil {
 		log.Printf("ChatCompletion error: %v\n", err)
 
-		return nil, err
+		return err
 	}
 
 	fmt.Println(resp.Choices[0].Message.Content)
@@ -35,8 +35,8 @@ func SendAndUnmarshal(ctx context.Context, client openai.Client, prompt string, 
 	if err != nil {
 		log.Printf("Unmarshal error: %v\n", err)
 
-		return nil, err
+		return err
 	}
 
-	return respTarget, nil
+	return nil
 }
