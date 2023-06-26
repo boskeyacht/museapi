@@ -1,8 +1,9 @@
 package types
 
-type Question interface {
-	GetQuestion() string
-	GetCorrectAnswer() string
-	GetPossibleAnswers() []string
-	GetQuestionType() string
-}
+type Question string
+
+const (
+	TrueFalseQuestion      Question = "TrueFalseQuestion"
+	MultipleChoiceQuestion Question = "MultipleChoiceQuestion"
+	ShortAnswerQuestion    Question = "ShortAnswerQuestion"
+)

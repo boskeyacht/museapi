@@ -48,9 +48,55 @@ func GetUserHandler(ctx context.Context, db *bun.DB) gin.HandlerFunc {
 
 func UpdateUserHandler(ctx context.Context, db *bun.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		var id string
+		user := models.DefaultUser()
+
+		if c.GetHeader("If-Match") == "" {
+			c.JSON(400, gin.H{
+				"error":    "Bad request",
+				"messsage": "If-Match header is required",
+			})
+
+			return
+		} else {
+			id = c.GetHeader("If-Match")
+		}
+
+		err := c.BindJSON(&user)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error":    "Bad request",
+				"messsage": "failed to bind json",
+			})
+
+			return
+		}
+
+		idc, err := strconv.Atoi(id)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error":    "Bad request",
+				"messsage": "id is not a number",
+			})
+
+			return
+		}
+
+		user.ID = int64(idc)
+
+		err = user.UpdateUser(ctx, db)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"error":    "Internal server error",
+				"messsage": "failed to update user",
+			})
+
+			return
+		}
+
 		c.JSON(200, gin.H{
 			"data": map[string]interface{}{
-				"username": "boskeyacht",
+				"user": user,
 			},
 		})
 	}

@@ -11,16 +11,16 @@ import (
 
 type User struct {
 	bun.BaseModel `bun:"users,alias:u"`
-	ID            int64        `bun:"id,pk"`
-	Username      string       `bun:"username,notnull,unique"`
-	CreatedAt     time.Time    `bun:",nullzero,notnull,default:current_timestamp"`
-	UpdatedAt     time.Time    `bun:",nullzero,notnull,default:current_timestamp"`
-	FirstName     string       `bun:"first_name,notnull"`
-	LastName      string       `bun:"last_name,notnull"`
-	Email         string       `bun:"email,notnull"`
-	Password      string       `bun:"password,notnull"`
-	Quizzes       []*Quiz      `bun:"rel:has-many"`
-	Flashcards    []*Flashcard `bun:"rel:has-many"`
+	ID            int64        `bun:"id,pk" json:"id"`
+	Username      string       `bun:"username,notnull,unique" json:"username"`
+	CreatedAt     time.Time    `bun:",nullzero,notnull,default:current_timestamp" json:"created_at"`
+	UpdatedAt     time.Time    `bun:",nullzero,notnull,default:current_timestamp" json:"updated_at"`
+	FirstName     string       `bun:"first_name,notnull" json:"first_name"`
+	LastName      string       `bun:"last_name,notnull" json:"last_name"`
+	Email         string       `bun:"email,notnull" json:"email"`
+	Password      string       `bun:"password,notnull" json:"password"`
+	Quizzes       []*Quiz      `bun:"rel:has-many" json:"quizzes"`
+	Flashcards    []*Flashcard `bun:"rel:has-many" json:"flashcards"`
 }
 
 func DefaultUser() *User {
@@ -36,6 +36,7 @@ func DefaultUser() *User {
 	}
 }
 
+// @todo relatioonships
 func (u *User) NewUser(ctx context.Context, db *bun.DB) error {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
