@@ -1,0 +1,86 @@
+package server
+
+import (
+	"context"
+	"sync"
+
+	"github.com/boskeyacht/museapi/db/models"
+	"github.com/boskeyacht/museapi/internal/types"
+	"github.com/boskeyacht/museapi/server/handlers/base"
+	"github.com/boskeyacht/museapi/server/handlers/flashcards"
+	"github.com/boskeyacht/museapi/server/handlers/quiz"
+	"github.com/boskeyacht/museapi/server/handlers/user"
+	"github.com/gin-gonic/gin"
+	"github.com/uptrace/bun"
+)
+
+type Server struct {
+	DB     *bun.DB
+	Config *types.Config
+	sync.Mutex
+}
+
+func NewServer(db *bun.DB, cfg *types.Config) *Server {
+	return &Server{
+		DB:     db,
+		Config: cfg,
+	}
+}
+
+func (s *Server) Close() error {
+	return s.DB.Close()
+}
+
+func (s *Server) InitRoutes(ctx context.Context) *gin.Engine {
+	server := gin.Default()
+
+	baseRoute := server.Group("/")
+	{
+		baseRoute.POST("login", base.LoginHandler(ctx, s.DB))
+		baseRoute.POST("signup", base.SignUpHandler(ctx, s.DB))
+	}
+
+	userRoute := server.Group("/user")
+	{
+		userRoute.GET("/:id", user.GetUserHandler(ctx, s.DB))
+		userRoute.PATCH("/:id", user.UpdateUserHandler(ctx, s.DB))
+	}
+
+	quizRoute := server.Group("/quiz")
+	{
+		quizRoute.GET("/:id", quiz.GetQuizHandler(ctx, s.DB))
+		quizRoute.POST("", quiz.NewQuizHandler(ctx, s.DB))
+		quizRoute.POST("/:id/score", quiz.ScoreQuizHandler(ctx, s.DB))
+		quizRoute.PATCH("/", quiz.UpdateQuizHandler(ctx, s.DB))
+	}
+
+	chatRoute := server.Group("/chat")
+	{
+		chatRoute.GET("/:id", quiz.GetQuizHandler(ctx, s.DB))
+		chatRoute.POST("", quiz.NewQuizHandler(ctx, s.DB))
+		chatRoute.PATCH("/:id", quiz.UpdateQuizHandler(ctx, s.DB))
+	}
+
+	flashcardsRoute := server.Group("/flashcards")
+	{
+		flashcardsRoute.POST("", flashcards.NewFlashcardsHandler(ctx, s.DB))
+	}
+
+	return server
+}
+
+func (s *Server) InitTables(ctx context.Context) error {
+	models := []interface{}{
+		(*models.User)(nil),
+		(*models.Quiz)(nil),
+		(*models.Flashcard)(nil),
+	}
+
+	for _, model := range models {
+		if _, err := s.DB.NewCreateTable().Model(model).Exec(ctx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
